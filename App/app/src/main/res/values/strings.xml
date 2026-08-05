@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiChaos</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Штаб</string>
+    <string name="nav_tasks">Задачі</string>
+    <string name="nav_reminders">Нагадування</string>
+    <string name="nav_habits">Звички</string>
+    <string name="nav_journal">Журнал</string>
+
+    <!-- Common actions -->
+    <string name="action_add">Додати</string>
+    <string name="action_save">Зберегти</string>
+    <string name="action_delete">Видалити</string>
+    <string name="action_cancel">Скасувати</string>
+    <string name="action_confirm">Підтвердити</string>
+
+    <!-- Empty states -->
+    <string name="empty_tasks">Задач поки немає. Натисни + щоб додати першу.</string>
+    <string name="empty_habits">Звичок ще не створено. Почни з однієї маленької.</string>
+    <string name="empty_journal">Журнал порожній. Напиши щось — навіть \"не знаю що написати\".</string>
+</resources>
