@@ -48,4 +48,7 @@ object DatabaseModule {
 
     @Provides
     fun provideSettingsDao(database: AntiChaosDatabase) = database.settingsDao()
+
+    @Provides
+    fun providePracticeDao(database: AntiChaosDatabase) = database.practiceDao()
 }

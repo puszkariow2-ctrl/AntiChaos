@@ -1,13 +1,18 @@
-package com.antichaos.app
+package com.antichaos.app.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import com.antichaos.app.database.Task
-import com.antichaos.app.repository.TaskRepository
+import com.antichaos.app.domain.model.Task
+import com.antichaos.app.data.repository.TaskRepository
+import javax.inject.Inject
 
-class MainViewModel(private val repository: TaskRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val taskRepository: TaskRepository
+) : ViewModel() {
 
     // ─── Tasks ──────────────────────────────────────────────
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
@@ -19,32 +24,33 @@ class MainViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private fun loadTasks() {
         viewModelScope.launch {
-            try {
-                val loaded = repository.tasks.firstOrNull() ?: emptyList()
-                _tasks.value = loaded
-            } catch (e: Exception) {
-                e.printStackTrace()
+            taskRepository.getAllTasks().collect { list ->
+                _tasks.value = list.filter { it.status != com.antichaos.app.data.local.entity.TaskStatus.DONE }
             }
         }
     }
 
-    fun addTask(title: String, description: String? = null, energyLevel: com.antichaos.app.database.EnergyLevel = com.antichaos.app.database.EnergyLevel.MEDIUM) {
+    fun addTask(title: String, description: String? = null) {
         viewModelScope.launch {
             val task = Task(
-                id = java.util.UUID.randomUUID().toString(),
                 title = title,
                 description = description,
-                energyLevel = energyLevel
+                createdAtEpochSeconds = System.currentTimeMillis() / 1000,
+                updatedAtEpochSeconds = System.currentTimeMillis() / 1000
             )
-            repository.addTask(task)
-            loadTasks()
+            taskRepository.createTask(task)
         }
     }
 
-    fun toggleTaskStatus(id: String) {
+    fun toggleTaskStatus(id: Long) {
         viewModelScope.launch {
-            // TODO: Implement status toggle in repository
-            loadTasks()
+            val task = taskRepository.getTaskById(id) ?: return@launch
+            val newStatus = if (task.status == com.antichaos.app.data.local.entity.TaskStatus.DONE) {
+                com.antichaos.app.data.local.entity.TaskStatus.PLANNED
+            } else {
+                com.antichaos.app.data.local.entity.TaskStatus.DONE
+            }
+            taskRepository.updateTask(task.copy(status = newStatus))
         }
     }
 

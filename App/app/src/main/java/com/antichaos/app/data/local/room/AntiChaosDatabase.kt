@@ -19,6 +19,8 @@ import com.antichaos.app.data.local.entity.BookEntity
 import com.antichaos.app.data.local.entity.QuoteEntity
 import com.antichaos.app.data.local.entity.MethodologyEntity
 import com.antichaos.app.data.local.entity.SavedNoteEntity
+import com.antichaos.app.data.local.entity.PracticeEntity
+import com.antichaos.app.data.local.entity.PracticeSessionEntity
 import com.antichaos.app.data.local.dao.TaskDao
 import com.antichaos.app.data.local.dao.ReminderDao
 import com.antichaos.app.data.local.dao.HabitDao
@@ -26,6 +28,7 @@ import com.antichaos.app.data.local.dao.JournalDao
 import com.antichaos.app.data.local.dao.CoachDao
 import com.antichaos.app.data.local.dao.LibraryDao
 import com.antichaos.app.data.local.dao.SettingsDao
+import com.antichaos.app.data.local.dao.PracticeDao
 
 @Database(
     version = 1,
@@ -60,7 +63,11 @@ import com.antichaos.app.data.local.dao.SettingsDao
         BookEntity::class,
         QuoteEntity::class,
         MethodologyEntity::class,
-        SavedNoteEntity::class
+        SavedNoteEntity::class,
+
+        // Practicum module
+        PracticeEntity::class,
+        PracticeSessionEntity::class
     ]
 )
 abstract class AntiChaosDatabase : RoomDatabase() {
@@ -71,4 +78,5 @@ abstract class AntiChaosDatabase : RoomDatabase() {
     abstract fun coachDao(): CoachDao
     abstract fun libraryDao(): LibraryDao
     abstract fun settingsDao(): SettingsDao
+    abstract fun practiceDao(): PracticeDao
 }

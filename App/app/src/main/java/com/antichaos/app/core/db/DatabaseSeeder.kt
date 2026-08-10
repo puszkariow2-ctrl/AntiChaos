@@ -1,135 +1,252 @@
 package com.antichaos.app.core.db
 
-import com.antichaos.app.data.local.dao.CoachDao
-import com.antichaos.app.data.local.dao.SettingsDao
-import com.antichaos.app.data.local.entity.DefaultDailyAnchors
-import com.antichaos.app.data.local.entity.DefaultLifeAreas
-import com.antichaos.app.data.local.entity.TechniqueEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import com.antichaos.app.data.local.dao.PracticeDao
+import com.antichaos.app.data.local.entity.PracticeEntity
 
-/**
- * Seeds initial data on first app launch:
- * - Default daily anchors (schedule)
- * - Default life areas
- * - Starter techniques for AI coach
- */
-class DatabaseSeeder @Inject constructor(
-    private val settingsDao: SettingsDao,
-    private val coachDao: CoachDao
-) {
-    suspend fun seedInitialData() = withContext(Dispatchers.IO) {
-        // Check if already seeded
-        val existingAnchors = settingsDao.getActiveAnchors().firstOrNull()?.size ?: 0
-        if (existingAnchors > 0) return@withContext // Already done
+object DatabaseSeeder {
 
-        // Seed daily anchors
-        DefaultDailyAnchors.anchors.forEach { anchor ->
-            settingsDao.insertAnchor(anchor)
-        }
+    suspend fun seedPracticesIfEmpty(practiceDao: PracticeDao) {
+        if (practiceDao.count() > 0L) return // Already seeded
 
-        // Seed life areas
-        DefaultLifeAreas.areas.forEach { area ->
-            settingsDao.insertLifeArea(area)
-        }
-
-        // Seed starter techniques (core set for AI coach)
-        seedTechniques()
-    }
-
-    private suspend fun seedTechniques() {
-        val techniques = listOf(
-            // STABILIZATION techniques
-            TechniqueEntity(
-                code = "breathing_478",
-                name = "Дихання 4-7-8",
-                category = 0, // STABILIZATION
-                description = "Швидка техніка для заспокоєння нервової системи. Допомагає при стресі та безсонні.",
-                stepsJson = "[\"Видихни повністю через рот\", \"Заткни ніс і вдихни носом на 4 секунди\", \"Затримай дихання на 7 секунд\", \"Повільно видихни через рот на 8 секунд\", \"Повтори 3-4 цикли\"]",
-                durationMinutes = 3,
-                triggersJson = "[\"stress\", \"insomnia\", \"anxiety\"]"
+        val practices = listOf(
+            // ─── BREATHING (category 0) ──────────────────────
+            PracticeEntity(
+                title = "Box Breathing",
+                category = 0,
+                durationSeconds = 120,
+                difficulty = 0,
+                instructions = """
+                    1. Видихни повністю
+                    2. Вдихни на 4 секунди
+                    3. Затримай дихання на 4 секунди
+                    4. Видихни на 4 секунди
+                    5. Затримай на 4 секунди
+                    Повторюй цикл
+                """.trimIndent(),
+                whenToUse = "anxiety,stress,focus"
             ),
-            TechniqueEntity(
-                code = "grounding_54321",
-                name = "Заземлення 5-4-3-2-1",
-                category = 0, // STABILIZATION
-                description = "Повертає тебе в момент \"зараз\" коли розум блукає у тривозі або хаосі.",
-                stepsJson = "[\"Подивись навколо і назви 5 речей які ти бачиш\", \"Торкнись 4 речей навколо тебе\", \"Почуй 3 звуки\", \"Понюхай 2 запахи (або уяви)\", \"Почуй 1 смак або емоцію в тілі\"]",
-                durationMinutes = 2,
-                triggersJson = "[\"anxiety\", \"overwhelm\", \"panic\"]"
+            PracticeEntity(
+                title = "Дихання 4-7-8",
+                category = 0,
+                durationSeconds = 180,
+                difficulty = 0,
+                instructions = """
+                    1. Видихни повністю через рот
+                    2. Закрий рот, вдихни носом на 4 секунди
+                    3. Затримай дихання на 7 секунд
+                    4. Повільно видихни через рот на 8 секунд
+                    Зроби 4 цикли
+                """.trimIndent(),
+                whenToUse = "sleep,anxiety,stress"
             ),
-            TechniqueEntity(
-                code = "box_breathing",
-                name = "Квадратне дихання",
-                category = 0, // STABILIZATION
-                description = "Військова техніка для швидкої стабілізації. Використовують Navy SEALs.",
-                stepsJson = "[\"Вдихни на 4 секунди\", \"Затримай дихання на 4 секунди\", \"Видихни на 4 секунди\", \"Затримай без повітря на 4 секунди\", \"Повтори 5-10 разів\"]",
-                durationMinutes = 3,
-                triggersJson = "[\"stress\", \"focus\", \"anger\"]"
+            PracticeEntity(
+                title = "Когерентне дихання",
+                category = 0,
+                durationSeconds = 300,
+                difficulty = 1,
+                instructions = """
+                    Дихай рівномірно: 5 секунд вдих, 5 секунд видих.
+                    Без затримок. Ритмічно, як хвилі.
+                    Фокусуйся тільки на диханні.
+                """.trimIndent(),
+                whenToUse = "stress,focus,balance"
+            ),
+            PracticeEntity(
+                title = "Вілька капала (Bhramari)",
+                category = 0,
+                durationSeconds = 120,
+                difficulty = 0,
+                instructions = """
+                    Закрий очі. Постав пальці на крила носа.
+                    Глибоко вдихни носом.
+                    Видихни носом, бурмотячи як бджола (ммм).
+                    Відчуй вібрацію в голові. Повтори 5-7 разів.
+                """.trimIndent(),
+                whenToUse = "anxiety,stress,sleep"
             ),
 
-            // COGNITIVE techniques
-            TechniqueEntity(
-                code = "reframe_friend",
-                name = "Що б ти сказав другу?",
-                category = 1, // COGNITIVE
-                description = "Зменшує самокритику. Ми часто жорстокіші до себе ніж до інших.",
-                stepsJson = "[\"Подумай про свою ситуацію\", \"Уяви що твій найкращий друг розповідає тобі те саме\", \"Що б ти йому сказав? Запиши ці слова\", \"Тепер скажи це собі\"]",
-                durationMinutes = 5,
-                triggersJson = "[\"self_criticism\", \"low_mood\", \"failure\"]"
+            // ─── GROUNDING (category 1) ──────────────────────
+            PracticeEntity(
+                title = "Заземлення 5-4-3-2-1",
+                category = 1,
+                durationSeconds = 180,
+                difficulty = 0,
+                instructions = """
+                    Знайди навколо себе:
+                    • 5 речей які бачиш
+                    • 4 речі які можеш торкнутися
+                    • 3 звуки які чуєш
+                    • 2 запахи які відчуваєш
+                    • 1 смак який відчуваєш
+                """.trimIndent(),
+                whenToUse = "anxiety,panic,overwhelm"
             ),
-            TechniqueEntity(
-                code = "evidence_check",
-                name = "Перевірка доказів",
-                category = 1, // COGNITIVE
-                description = "Боротьба з негативними думками через логіку. Що правда, а що тривога?",
-                stepsJson = "[\"Запиши свою негативну думку\", \"Які докази ЩО ВОНА ПРАВДИВА?\", \"Які докази ЩО ВОНА НЕПРАВДИВА?\", \"Який більш об'єктивний погляд на ситуацію?\"]",
-                durationMinutes = 5,
-                triggersJson = "[\"anxiety\", \"negative_thinking\", \"self_doubt\"]"
+            PracticeEntity(
+                title = "Сканування тіла",
+                category = 1,
+                durationSeconds = 300,
+                difficulty = 0,
+                instructions = """
+                    Закрий очі. Повільно пройди увагою від пальців ніг до макушки.
+                    Звертай увагу на кожну частину тіла: де напруга? де спокій?
+                    Не змінюй нічого — просто помічай.
+                """.trimIndent(),
+                whenToUse = "stress,sleep,body-awareness"
+            ),
+            PracticeEntity(
+                title = "Холодна вода",
+                category = 1,
+                durationSeconds = 60,
+                difficulty = 0,
+                instructions = """
+                    Умийся холодною водою або приложи холодний компрес до шиї/обличчя.
+                    Це миттєво активує dive reflex і знижує тривогу.
+                """.trimIndent(),
+                whenToUse = "panic,anxiety,overwhelm"
             ),
 
-            // ACTION techniques (for procrastination)
-            TechniqueEntity(
-                code = "five_minute_rule",
-                name = "Правило 5 хвилин",
-                category = 2, // ACTION
-                description = "Для прокрастинації. Зобов'язуй себе лише на 5 хвилин — почати найскладніше.",
-                stepsJson = "[\"Обери одну задачу яку відкладаєш\", \"Постав таймер на 5 хвилин\", \"Роби задачу ЛИШЕ 5 хвилин\", \"Після таймера: або продовжуй, або зупиняйся без провини\"]",
-                durationMinutes = 5,
-                triggersJson = "[\"procrastination\", \"overwhelm\", \"resistance\"]"
+            // ─── PHYSICAL (category 2) ──────────────────────
+            PracticeEntity(
+                title = "Розтяжка для спини (5 хв)",
+                category = 2,
+                durationSeconds = 300,
+                difficulty = 0,
+                instructions = """
+                    Для тих хто сидить весь день:
+                    1. Наклони голову до плеча (ліва/права) — по 20 сек
+                    2. Обійми себе за плечі і розтягни спину — 20 сек
+                    3. Стоячи, підніми руки вгору і потягнися — 15 сек
+                    4. Сидячи, нахил вперед до колін — 20 сек
+                """.trimIndent(),
+                whenToUse = "desk-work,tension,fatigue"
             ),
-            TechniqueEntity(
-                code = "break_it_down",
-                name = "Розбий на кроки",
-                category = 2, // ACTION
-                description = "Коли задача занадто велика і лякає — розбий її до смішно малих кроків.",
-                stepsJson = "[\"Напиши задачу як вона є\", \"Запитай: 'Який перший фізичний крок?'\", \"Розбий кожен крок ще дрібніше\", \"Почни з найменшого кроку — той що займає менше 2 хвилин\"]",
-                durationMinutes = 5,
-                triggersJson = "[\"overwhelm\", \"procrastination\", \"big_task\"]"
+            PracticeEntity(
+                title = "Прогресивна релаксація",
+                category = 2,
+                durationSeconds = 300,
+                difficulty = 1,
+                instructions = """
+                    Починаючи з ніг: напруж м'язи на 5 секунд, потім різко розслаб.
+                    Піднімайся вище: гомілки → стегна → живіт → руки → плечі → обличчя.
+                    Відчуй різницю між напругою і розслабленням.
+                """.trimIndent(),
+                whenToUse = "stress,sleep,tension"
+            ),
+            PracticeEntity(
+                title = "5 хв руху",
+                category = 2,
+                durationSeconds = 300,
+                difficulty = 0,
+                instructions = """
+                    Встань і просто рухайся:
+                    • Пройдись по кімнаті
+                    • Зроби кілька присідань
+                    • Потягнися вгору
+                    Рух змінює стан — навіть мінімум.
+                """.trimIndent(),
+                whenToUse = "fatigue,stuck,low-energy"
             ),
 
-            // EMOTIONAL techniques
-            TechniqueEntity(
-                code = "gratitude_3",
-                name = "3 речі за які вдячний",
-                category = 3, // EMOTIONAL
-                description = "Швидкий зсув уваги від проблем до того що йде добре.",
-                stepsJson = "[\"Зупинись на 1 хвилину\", \"Назви 3 конкретні речі за які ти вдячний сьогодні\", \"Не 'здоров'я' — а конкретно: 'гарна кава вранці', 'дзвінок друга'\", \"Почуй вдячність хоча б на 5 секунд\"]",
-                durationMinutes = 2,
-                triggersJson = "[\"low_mood\", \"gratitude\", \"perspective\"]"
+            // ─── MENTAL (category 3) ──────────────────────
+            PracticeEntity(
+                title = "Медитація уваги (3 хв)",
+                category = 3,
+                durationSeconds = 180,
+                difficulty = 1,
+                instructions = """
+                    Закрий очі. Фокусуйся на диханні.
+                    Коли розум відволікається — м'яко повертай увагу до дихання.
+                    Не осуджуй себе за відволікання — це нормально. Просто повертайся.
+                """.trimIndent(),
+                whenToUse = "focus,mindfulness,daily-practice"
             ),
-            TechniqueEntity(
-                code = "self_compassion_break",
-                name = "Пауза самоспівчуття",
-                category = 3, // EMOTIONAL
-                description = "Коли тобі боляче або ти помилився — будь ласкавим до себе.",
-                stepsJson = "[\"Скажи: 'Це важкий момент'\", \"Скажи: 'Страждання — це частина людського досвіду'\", \"Положи руку на серце і скажи собі щось ласкаве\", \"Наприклад: 'Все буде добре', 'Я роблю що можу'\"]",
-                durationMinutes = 3,
-                triggersJson = "[\"failure\", \"self_criticism\", \"pain\"]"
+            PracticeEntity(
+                title = "Візуалізація дня",
+                category = 3,
+                durationSeconds = 180,
+                difficulty = 0,
+                instructions = """
+                    Закрий очі. Уяви свій день ідеально: ти спокійний, фокусований, продуктивний.
+                    Побач як ти легко робиш важливі справи. Відчуй цей стан тілом.
+                    Це не магія — це налаштування мозку на успіх.
+                """.trimIndent(),
+                whenToUse = "morning,focus,motivation"
+            ),
+            PracticeEntity(
+                title = "Переформулювання думок",
+                category = 3,
+                durationSeconds = 120,
+                difficulty = 1,
+                instructions = """
+                    Запиши негативну думку (напр. "Я нічого не вмію").
+                    Запитай: чи це правда? Які докази проти?
+                    Переформулюй: "Я ще вчусь, і я вже зробив X".
+                """.trimIndent(),
+                whenToUse = "self-criticism,negative-thoughts,anxiety"
+            ),
+
+            // ─── EMOTIONAL (category 4) ──────────────────────
+            PracticeEntity(
+                title = "Назвай емоцію",
+                category = 4,
+                durationSeconds = 120,
+                difficulty = 0,
+                instructions = """
+                    Зупинись на хвилину. Запитай себе: "Що я зараз відчуваю?"
+                    Спробуй назвати емоцію якомога точніше: не просто "погано", а "розчарований", "тривожний", "втомлений".
+                    Назвавши — ти вже трохи контролюєш.
+                """.trimIndent(),
+                whenToUse = "emotional-overwhelm,self-awareness,anytime"
+            ),
+            PracticeEntity(
+                title = "Лист до себе",
+                category = 4,
+                durationSeconds = 300,
+                difficulty = 1,
+                instructions = """
+                    Напиши коротке повідомлення собі: що ти відчуваєш, чому важко, що тобі потрібно.
+                    Не для публікації — тільки для тебе. Це вивантажує голову.
+                """.trimIndent(),
+                whenToUse = "stress,sadness,confusion"
+            ),
+
+            // ─── SPIRITUAL/MEANING (category 5) ──────────────
+            PracticeEntity(
+                title = "3 речі за які вдячний",
+                category = 5,
+                durationSeconds = 120,
+                difficulty = 0,
+                instructions = """
+                    Подумай і запиши (в щоденнику або в голові) 3 речі за які ти вдячний сьогодні.
+                    Можуть бути дрібними: гарна кава, сонце за вікном, повідомлення від друга.
+                    Вдячність змінює фокус з того чого немає на те що є.
+                """.trimIndent(),
+                whenToUse = "gratitude,mood-boost,daily-practice"
+            ),
+            PracticeEntity(
+                title = "Що для тебе важливо зараз?",
+                category = 5,
+                durationSeconds = 180,
+                difficulty = 0,
+                instructions = """
+                    Зупинись і запитай: що справді важливо в моєму житті прямо зараз?
+                    Не "має бути", а "є". Запиши 3 речі. Це твій компас.
+                """.trimIndent(),
+                whenToUse = "lost-direction,meaning,stress"
+            ),
+            PracticeEntity(
+                title = "Зв'язок з природою",
+                category = 5,
+                durationSeconds = 300,
+                difficulty = 0,
+                instructions = """
+                    Вийди назовні (або до вікна). Подивись на небо/дерева. Послухай звуки.
+                    Ти — частина чогось більшого. Це зменшує тривогу і повертає перспективу.
+                """.trimIndent(),
+                whenToUse = "overwhelm,anxiety,stuck"
             )
         )
 
-        techniques.forEach { coachDao.insertTechnique(it) }
+        practiceDao.insertAll(practices)
     }
 }

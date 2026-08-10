@@ -1,4 +1,4 @@
-package com.antichaos.app
+package com.antichaos.app.presentation.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FeedScreen(
-    viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     Scaffold(
         bottomBar = { BottomNavigationBar() }
@@ -152,16 +152,17 @@ fun FocusTodayBlock(viewModel: MainViewModel) {
 }
 
 @Composable
-fun TaskPreviewRow(task: com.antichaos.app.database.Task) {
+fun TaskPreviewRow(task: com.antichaos.app.domain.model.Task) {
+    val isDone = task.status == com.antichaos.app.data.local.entity.TaskStatus.DONE
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Box(
-            modifier = Modifier.size(8.dp).background(if (task.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline, shape = androidx.compose.foundation.shape.CircleShape),
+            modifier = Modifier.size(8.dp).background(if (isDone) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline, shape = androidx.compose.foundation.shape.CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            if (task.isCompleted) Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onPrimary)
+            if (isDone) Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onPrimary)
         }
         Spacer(modifier = Modifier.width(8.dp))
-        Text(task.title, style = MaterialTheme.typography.bodyMedium, textDecoration = if (task.isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null)
+        Text(task.title, style = MaterialTheme.typography.bodyMedium, textDecoration = if (isDone) androidx.compose.ui.text.style.TextDecoration.LineThrough else null)
     }
 }
 
