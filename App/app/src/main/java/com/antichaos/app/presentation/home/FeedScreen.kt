@@ -15,13 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.antichaos.app.presentation.navigation.Screen
 
 @Composable
 fun FeedScreen(
     navController: NavHostController,
-    viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
