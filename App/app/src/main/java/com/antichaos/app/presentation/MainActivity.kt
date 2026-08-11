@@ -6,9 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import com.antichaos.app.presentation.theme.AntiChaosTheme
-import com.antichaos.app.presentation.home.FeedScreen
+import com.antichaos.app.presentation.navigation.AntiChaosNavGraph
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -22,7 +23,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = androidx.compose.material3.MaterialTheme.colorScheme.background
                 ) {
-                    FeedScreen()
+                    val navController = rememberNavController()
+                    AntiChaosNavGraph(navController)
                 }
             }
         }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,13 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.antichaos.app.presentation.navigation.Screen
 
 @Composable
 fun FeedScreen(
+    navController: NavHostController,
     viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     Scaffold(
-        bottomBar = { BottomNavigationBar() }
+        bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -31,32 +35,32 @@ fun FeedScreen(
             contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
         ) {
             item { GreetingBlock(viewModel = viewModel) }
-            item { FocusTodayBlock(viewModel = viewModel) }
+            item { FocusTodayBlock(navController, viewModel) }
             item { NextAnchorBlock() }
-            item { HabitsTodayBlock() }
-            item { PracticeSuggestionBlock() }
+            item { HabitsTodayBlock(navController) }
+            item { PracticeSuggestionBlock(navController) }
             item { InsightBlock() }
-            item { JournalPromptBlock() }
+            item { JournalPromptBlock(navController) }
             item { RandomActionBlock() }
-            item { CoachCheckInBlock() }
+            item { CoachCheckInBlock(navController) }
         }
     }
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavHostController) {
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Штаб") },
             label = { Text("Штаб") },
             selected = true,
-            onClick = {}
+            onClick = { navController.navigate(Screen.Feed.route) { popUpTo(Screen.Feed.route) { inclusive = true } } }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.ChatBubble, contentDescription = "Коуч") },
             label = { Text("Коуч") },
             selected = false,
-            onClick = { /* TODO: Navigate to Coach Chat */ }
+            onClick = { navController.navigate(Screen.CoachChat.route) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Menu, contentDescription = "Меню") },
@@ -114,15 +118,15 @@ fun MoodButton(emoji: String, isSelected: Boolean, onClick: () -> Unit) {
 // ─── BLOCK 2: Focus Today (Tasks) ──────────────────────────────────
 
 @Composable
-fun FocusTodayBlock(viewModel: HomeViewModel) {
+fun FocusTodayBlock(navController: NavHostController, viewModel: HomeViewModel) {
     val tasks by viewModel.tasks.collectAsState()
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Screen.Tasks.route) }) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("🎯 Фокус дня", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                IconButton(onClick = { /* TODO: Navigate to Tasks */ }) {
-                    Icon(Icons.Default.ArrowForward, contentDescription = "Всі задачі")
+                IconButton(onClick = { navController.navigate(Screen.Tasks.route) }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Всі задачі")
                 }
             }
 
@@ -169,13 +173,13 @@ fun NextAnchorBlock() {
 // ─── BLOCK 4: Habits Today ─────────────────────────────────────────
 
 @Composable
-fun HabitsTodayBlock() {
-    Card(modifier = Modifier.fillMaxWidth()) {
+fun HabitsTodayBlock(navController: NavHostController) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Screen.Habits.route) }) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("🔁 Звички сьогодні", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                IconButton(onClick = { /* TODO: Navigate to Habits */ }) {
-                    Icon(Icons.Default.ArrowForward, contentDescription = "Всі звички")
+                IconButton(onClick = { navController.navigate(Screen.Habits.route) }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Всі звички")
                 }
             }
             Text("Поки немає звичок — створи першу!", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -186,9 +190,9 @@ fun HabitsTodayBlock() {
 // ─── BLOCK 5: Practice Suggestion (Practicum) ──────────────────────
 
 @Composable
-fun PracticeSuggestionBlock() {
+fun PracticeSuggestionBlock(navController: NavHostController) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Screen.Practicum.route) },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -215,10 +219,10 @@ fun InsightBlock() {
 // ─── BLOCK 7: Journal Prompt ───────────────────────────────────────
 
 @Composable
-fun JournalPromptBlock() {
+fun JournalPromptBlock(navController: NavHostController) {
     val prompt by remember { mutableStateOf(getTimeBasedJournalPrompt()) }
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Screen.Journal.route) }) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("📝 Щоденник", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
@@ -301,9 +305,9 @@ fun getRandomAction(): String {
 // ─── BLOCK 9: Coach Check-in ──────────────────────────────────────
 
 @Composable
-fun CoachCheckInBlock() {
+fun CoachCheckInBlock(navController: NavHostController) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Screen.CoachChat.route) },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

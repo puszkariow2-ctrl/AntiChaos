@@ -1,40 +1,50 @@
 package com.antichaos.app.presentation.habits
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HabitsScreen(
-    navController: NavHostController
-) {
-    // Habits screen — today's habits with one-tap completion
-    
-    /* TODO: Implement
-    val viewModel = hiltViewModel<HabitsViewModel>()
-    
+fun HabitsScreen(navController: NavHostController) {
     Scaffold(
-        floatingActionButton = { AddHabitFAB() }
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            // Today's progress header
-            HabitProgressHeader(
-                completedCount = viewModel.completedToday,
-                totalCount = viewModel.totalActiveHabits
-            )
-            
-            // Habits for today (based on frequency + day of week)
-            LazyColumn {
-                items(viewModel.todayHabits) { habit ->
-                    HabitItem(
-                        habit = habit,
-                        isCompleted = viewModel.isHabitCompletedToday(habit.id),
-                        onComplete = { viewModel.completeHabit(habit.id) },
-                        onUndo = { viewModel.undoCompletion(habit.id) },
-                        onClick = { navController.navigate("habit_detail/${habit.id}") }
-                    )
+        topBar = {
+            TopAppBar(
+                title = { Text("Звички") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                    }
                 }
-            }
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { /* TODO: Show add habit dialog */ },
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text("Нова звичка") }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text("🔁", style = MaterialTheme.typography.displayMedium)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Твої звички тут", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Створи першу звичку і почни будувати кращу версію себе", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
-    */
 }
