@@ -32,11 +32,18 @@ class HomeViewModel @Inject constructor(
 
     fun addTask(title: String, description: String? = null) {
         viewModelScope.launch {
+            val now = System.currentTimeMillis() / 1000
             val task = Task(
                 title = title,
                 description = description,
-                createdAtEpochSeconds = System.currentTimeMillis() / 1000,
-                updatedAtEpochSeconds = System.currentTimeMillis() / 1000
+                projectId = null,
+                lifeAreaId = null,
+                energyLevel = null,
+                timeEstimateMinutes = null,
+                dueAtEpochSeconds = null,
+                createdAtEpochSeconds = now,
+                updatedAtEpochSeconds = now,
+                completedAtEpochSeconds = null
             )
             taskRepository.createTask(task)
         }

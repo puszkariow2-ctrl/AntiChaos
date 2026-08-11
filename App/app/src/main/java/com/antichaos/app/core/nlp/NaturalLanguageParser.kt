@@ -101,12 +101,12 @@ class NaturalLanguageParser {
         // "через X хвилин/годин"
         val relativeMinutes = Regex("через\\s+(\\d+)\\s*хв", RegexOption.IGNORE_CASE).find(lower)
         if (relativeMinutes != null) {
-            return now.plusMinutes(relativeMinutes.groupValues[1].toInt())
+            return now.plusMinutes(relativeMinutes.groupValues[1].toLong())
         }
 
         val relativeHours = Regex("через\\s+(\\d+)\\s*год", RegexOption.IGNORE_CASE).find(lower)
         if (relativeHours != null) {
-            return now.plusHours(relativeHours.groupValues[1].toInt())
+            return now.plusHours(relativeHours.groupValues[1].toLong())
         }
 
         // "о HH:MM" or "в HH:MM"

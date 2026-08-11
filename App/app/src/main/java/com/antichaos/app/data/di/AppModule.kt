@@ -39,12 +39,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideDatabaseSeeder(
-        settingsDao: com.antichaos.app.data.local.dao.SettingsDao,
-        coachDao: com.antichaos.app.data.local.dao.CoachDao
-    ): DatabaseSeeder {
-        return DatabaseSeeder(settingsDao, coachDao)
+    fun provideReminderNotificationManager(
+        @ApplicationContext context: Context,
+        workManager: WorkManager
+    ): ReminderNotificationManager {
+        return ReminderNotificationManager(context, workManager)
     }
 
-    // ReminderNotificationManager provided via Hilt-assisted injection with WorkManager
+    // DatabaseSeeder is now an object with static methods — no DI needed
 }

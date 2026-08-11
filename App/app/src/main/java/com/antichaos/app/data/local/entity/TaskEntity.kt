@@ -1,9 +1,9 @@
 package com.antichaos.app.data.local.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import java.time.Instant
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
@@ -24,13 +24,13 @@ data class TaskEntity(
 )
 
 data class TaskWithSteps(
+    @Embedded
+    val task: TaskEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "taskId",
-        orderBy = ["orderIndex"]
+        entityColumn = "taskId"
     )
-    val steps: List<TaskStepEntity>,
-    val task: TaskEntity
+    val steps: List<TaskStepEntity>
 )
 
 enum class TaskStatus(val value: Int) {

@@ -1,13 +1,17 @@
 package com.antichaos.app.presentation.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -26,31 +30,14 @@ fun FeedScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
         ) {
-            // Block 1: Greeting + Mood
             item { GreetingBlock(viewModel = viewModel) }
-
-            // Block 2: Focus Today (Tasks preview)
             item { FocusTodayBlock(viewModel = viewModel) }
-
-            // Block 3: Next Anchor
             item { NextAnchorBlock() }
-
-            // Block 4: Habits Today
             item { HabitsTodayBlock() }
-
-            // Block 5: Practice Suggestion (Practicum)
             item { PracticeSuggestionBlock() }
-
-            // Block 6: Quote/Insight (Library)
             item { InsightBlock() }
-
-            // Block 7: Journal Prompt
             item { JournalPromptBlock() }
-
-            // Block 8: Random Action 🎲
             item { RandomActionBlock() }
-
-            // Block 9: Coach Check-in
             item { CoachCheckInBlock() }
         }
     }
@@ -83,7 +70,7 @@ fun BottomNavigationBar() {
 // ─── BLOCK 1: Greeting + Mood ──────────────────────────────────────
 
 @Composable
-fun GreetingBlock(viewModel: MainViewModel) {
+fun GreetingBlock(viewModel: HomeViewModel) {
     val greeting by viewModel.greeting.collectAsState()
     var selectedMood by remember { mutableIntStateOf(-1) }
 
@@ -127,7 +114,7 @@ fun MoodButton(emoji: String, isSelected: Boolean, onClick: () -> Unit) {
 // ─── BLOCK 2: Focus Today (Tasks) ──────────────────────────────────
 
 @Composable
-fun FocusTodayBlock(viewModel: MainViewModel) {
+fun FocusTodayBlock(viewModel: HomeViewModel) {
     val tasks by viewModel.tasks.collectAsState()
 
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -156,7 +143,7 @@ fun TaskPreviewRow(task: com.antichaos.app.domain.model.Task) {
     val isDone = task.status == com.antichaos.app.data.local.entity.TaskStatus.DONE
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Box(
-            modifier = Modifier.size(8.dp).background(if (isDone) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline, shape = androidx.compose.foundation.shape.CircleShape),
+            modifier = Modifier.size(8.dp).clip(CircleShape).background(if (isDone) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline),
             contentAlignment = Alignment.Center
         ) {
             if (isDone) Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onPrimary)

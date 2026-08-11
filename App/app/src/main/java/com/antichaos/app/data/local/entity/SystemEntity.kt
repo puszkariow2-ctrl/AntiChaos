@@ -40,14 +40,14 @@ enum class AnchorScenario(val value: Int) {
 // Default life areas that will be seeded on first launch
 object DefaultLifeAreas {
     val areas = listOf(
-        LifeAreaEntity(id = 1, name = "Здоров'я тіла", icon = "🏃", orderIndex = 0),
-        LifeAreaEntity(id = 2, name = "Ментальне здоров'я", icon = "🧠", orderIndex = 1),
-        LifeAreaEntity(id = 3, name = "Кар'єра/Бізнес", icon = "💼", orderIndex = 2),
-        LifeAreaEntity(id = 4, name = "Фінанси", icon = "💰", orderIndex = 3),
-        LifeAreaEntity(id = 5, name = "Стосунки", icon = "👥", orderIndex = 4),
-        LifeAreaEntity(id = 6, name = "Особистий ріст", icon = "📚", orderIndex = 5),
-        LifeAreaEntity(id = 7, name = "Творчість", icon = "🎨", orderIndex = 6),
-        LifeAreaEntity(id = 8, name = "Відпочинок", icon = "🎮", orderIndex = 7)
+        LifeAreaEntity(id = 1, name = "Здоров'я тіла", icon = "🏃", description = null, orderIndex = 0),
+        LifeAreaEntity(id = 2, name = "Ментальне здоров'я", icon = "🧠", description = null, orderIndex = 1),
+        LifeAreaEntity(id = 3, name = "Кар'єра/Бізнес", icon = "💼", description = null, orderIndex = 2),
+        LifeAreaEntity(id = 4, name = "Фінанси", icon = "💰", description = null, orderIndex = 3),
+        LifeAreaEntity(id = 5, name = "Стосунки", icon = "👥", description = null, orderIndex = 4),
+        LifeAreaEntity(id = 6, name = "Особистий ріст", icon = "📚", description = null, orderIndex = 5),
+        LifeAreaEntity(id = 7, name = "Творчість", icon = "🎨", description = null, orderIndex = 6),
+        LifeAreaEntity(id = 8, name = "Відпочинок", icon = "🎮", description = null, orderIndex = 7)
     )
 }
 
